@@ -153,11 +153,22 @@
 </div>
 
 <script>
+(function verifyAdminAccess() {
+  const loggedInRole = localStorage.getItem("loggedIn");
+  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const email = (currentUser.email || "").toLowerCase();
+
+  if (loggedInRole !== "admin" || email !== "usrisarvan@gmail.com") {
+    alert("Access Restricted: Only usrisarvan@gmail.com has Administrator access.");
+    window.location.href = "index.html";
+  }
+})();
 
 function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("currentUser");
     window.location.href = "index.html";
 }
-
 </script>
 
 </body>

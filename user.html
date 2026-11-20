@@ -697,8 +697,13 @@ th {
 <script>
 
 const user = JSON.parse(localStorage.getItem("user"));
+const loggedInRole = localStorage.getItem("loggedIn");
 
-if (!user) {
+// Admin cannot access user portal
+if (user && user.email && user.email.toLowerCase() === "usrisarvan@gmail.com") {
+    alert("Admin account (usrisarvan@gmail.com) cannot access user portal. Redirecting to Admin Command Center.");
+    window.location.href = "admin.html";
+} else if (!user || loggedInRole !== "user") {
     window.location.href = "index.html";
 }
 
@@ -797,9 +802,10 @@ function requestBlood() {
 
 
 function logout() {
-
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("user");
     window.location.href = "index.html";
-
 }
 
 </script>

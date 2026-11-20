@@ -79,11 +79,18 @@
       </a>
     </nav>
 
-    <!-- Login / Register / Logout -->
+    <!-- Admin Profile Badge -->
     <div class="sidebar-auth" style="padding: 0.75rem 1rem; border-top: 1px solid var(--border);">
-      <a href="index.html" class="nav-item">🔑 <span>Login</span></a>
-      <a href="register.html" class="nav-item">📝 <span>Register</span></a>
-      <a href="#" class="nav-item" onclick="logoutAdmin(event)">🚪 <span>Logout</span></a>
+      <div style="margin-bottom: 0.75rem; padding: 0.6rem; background: var(--bg-hover); border-radius: 8px; border: 1px solid var(--border);">
+        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); font-weight: 700; display: flex; align-items: center; gap: 5px;">
+          <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#10b981;"></span>
+          System Administrator
+        </div>
+        <div style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary); word-break: break-all; margin: 3px 0;" id="admin-active-email">usrisarvan@gmail.com</div>
+        <div><span class="badge badge-success" style="font-size: 0.65rem; padding: 2px 7px;">Full Control</span></div>
+      </div>
+      <a href="register.html" class="nav-item">📝 <span>Register User</span></a>
+      <a href="#" class="nav-item" onclick="logoutAdmin(event)">🚪 <span>Logout Admin</span></a>
     </div>
 
     <div class="sidebar-footer">
@@ -1172,10 +1179,22 @@
 <script src="js/app.js"></script>
 
 <script>
+// Authentication check: Only usrisarvan@gmail.com (admin) has access and full control
+(function verifyAdminAccess() {
+  const loggedInRole = localStorage.getItem("loggedIn");
+  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const email = (currentUser.email || "").toLowerCase();
+
+  if (loggedInRole !== "admin" || email !== "usrisarvan@gmail.com") {
+    alert("Access Restricted: Only usrisarvan@gmail.com has Administrator access and full control.");
+    window.location.href = "index.html";
+  }
+})();
+
 function logoutAdmin(event) {
-  event.preventDefault();
+  if (event) event.preventDefault();
   localStorage.removeItem("loggedIn");
-  localStorage.removeItem("user");
+  localStorage.removeItem("currentUser");
   window.location.href = "index.html";
 }
 </script>

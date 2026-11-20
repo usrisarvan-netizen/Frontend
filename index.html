@@ -86,8 +86,10 @@
 
         #message {
             text-align: center;
-            color: red;
             margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -111,8 +113,8 @@
 
         <label>Login As</label>
         <select id="role">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
+            <option value="user">User (Donors / General Users)</option>
+            <option value="admin">Admin (System Director Only)</option>
         </select>
 
         <button type="submit">Login</button>
@@ -127,38 +129,109 @@
 </div>
 
 <script>
+const ADMIN_EMAIL = "usrisarvan@gmail.com";
+const ADMIN_PASSWORD = "Sri@4321";
+
 function login(event) {
     event.preventDefault();
 
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const role = document.getElementById("role").value;
+    const msgBox = document.getElementById("message");
 
-    // Admin login
-    if (
-        role === "admin" &&
-        email === "admin@pulselink.com" &&
-        password === "admin123"
-    ) {
-        window.location.href = "admin.html";
+    function showError(text) {
+        msgBox.style.display = "block";
+        msgBox.style.background = "#fee2e2";
+        msgBox.style.color = "#b91c1c";
+        msgBox.style.border = "1px solid #ef4444";
+        msgBox.style.padding = "10px";
+        msgBox.style.borderRadius = "6px";
+        msgBox.innerText = text;
+    }
+
+    function showSuccess(text) {
+        msgBox.style.display = "block";
+        msgBox.style.background = "#dcfce7";
+        msgBox.style.color = "#15803d";
+        msgBox.style.border = "1px solid #22c55e";
+        msgBox.style.padding = "10px";
+        msgBox.style.borderRadius = "6px";
+        msgBox.innerText = text;
+    }
+
+    // Rule: Admin cannot login as user
+    if (role === "user" && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        showError("The Administrator (usrisarvan@gmail.com) cannot log in as a regular user. Please switch 'Login As' to Admin.");
         return;
     }
 
-    // User login
-    const user = JSON.parse(localStorage.getItem("user"));
+    // Rule: Only usrisarvan@gmail.com can login as Admin with Sri@4321
+    if (role === "admin") {
+        if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+            showError("Access Denied: Only usrisarvan@gmail.com is authorized as Admin. All other accounts are users only.");
+            return;
+        }
 
-    if (
-        role === "user" &&
-        user &&
-        email === user.email &&
-        password === user.password
-    ) {
-        window.location.href = "user.html";
+        if (password !== ADMIN_PASSWORD) {
+            showError("Invalid administrator password.");
+            return;
+        }
+
+        // Admin login authorized - Full control granted
+        localStorage.setItem("loggedIn", "admin");
+        localStorage.setItem("currentUser", JSON.stringify({
+            name: "usrisarvan",
+            email: ADMIN_EMAIL,
+            role: "admin",
+            permissions: "full_control"
+        }));
+
+        showSuccess("Admin authentication verified! Redirecting to Command Center...");
+        setTimeout(function() {
+            window.location.href = "admin.html";
+        }, 500);
         return;
     }
 
-    document.getElementById("message").innerText =
-        "Invalid email, password or role.";
+    // Role: User (Remaining all are users only)
+    let usersList = JSON.parse(localStorage.getItem("users")) || [];
+    const singleUser = JSON.parse(localStorage.getItem("user"));
+    if (singleUser && !usersList.some(u => u.email && u.email.toLowerCase() === singleUser.email.toLowerCase())) {
+        usersList.push(singleUser);
+    }
+
+    // If no registered users yet, populate a default test user
+    if (usersList.length === 0) {
+        usersList.push({
+            name: "Regular Donor",
+            email: "user@pulselink.com",
+            phone: "+91 9876543210",
+            bloodGroup: "O+",
+            password: "user123"
+        });
+        localStorage.setItem("users", JSON.stringify(usersList));
+    }
+
+    const matchedUser = usersList.find(u => u.email && u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+
+    if (matchedUser) {
+        localStorage.setItem("loggedIn", "user");
+        localStorage.setItem("user", JSON.stringify(matchedUser));
+        localStorage.setItem("currentUser", JSON.stringify({
+            name: matchedUser.name,
+            email: matchedUser.email,
+            role: "user"
+        }));
+
+        showSuccess("Login successful! Redirecting to User Portal...");
+        setTimeout(function() {
+            window.location.href = "user.html";
+        }, 500);
+        return;
+    }
+
+    showError("Invalid user email or password. Please verify credentials or create a new account.");
 }
 </script>
 

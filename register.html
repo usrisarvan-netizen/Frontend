@@ -170,20 +170,28 @@
 </div>
 
 <script>
+const ADMIN_EMAIL = "usrisarvan@gmail.com";
 
 function registerUser(event) {
 
     event.preventDefault();
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
     const bloodGroup = document.getElementById("bloodGroup").value;
     const password = document.getElementById("password").value;
     const confirmPassword =
         document.getElementById("confirmPassword").value;
 
     const message = document.getElementById("message");
+
+    // Admin email cannot be registered as a regular user
+    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        message.style.color = "red";
+        message.innerText = "This email is reserved for the System Administrator and cannot be registered as a regular user.";
+        return;
+    }
 
     // Check password
     if (password !== confirmPassword) {
@@ -192,25 +200,35 @@ function registerUser(event) {
         return;
     }
 
-    // Create user object
+    // Create user object (All registered accounts are users only)
     const user = {
         name: name,
         email: email,
         phone: phone,
         bloodGroup: bloodGroup,
-        password: password
+        password: password,
+        role: "user"
     };
 
-    // Save user
+    // Save user to registered users list
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+        message.style.color = "red";
+        message.innerText = "An account with this email already exists. Please login.";
+        return;
+    }
+
+    users.push(user);
+    localStorage.setItem("users", JSON.stringify(users));
     localStorage.setItem("user", JSON.stringify(user));
 
     message.style.color = "green";
-    message.innerText = "Registration successful!";
+    message.innerText = "Registration successful! You can now log in as a User.";
 
     // Go to login
     setTimeout(function() {
         window.location.href = "index.html";
-    }, 1000);
+    }, 1200);
 }
 
 </script>
