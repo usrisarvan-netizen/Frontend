@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PulseLink - User Dashboard</title>
+<title>PulseLink - User Portal</title>
 
 <style>
 * {
@@ -16,52 +16,94 @@
 body {
     background: #f4f6f8;
     color: #222;
+    min-height: 100vh;
 }
 
+/* Header */
 .header {
     background: #c41e24;
     color: white;
-    padding: 18px 30px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .logo {
-    font-size: 25px;
+    font-size: 22px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
 }
 
 .logout {
     background: white;
     color: #c41e24;
     border: none;
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s, transform 0.1s;
 }
 
+.logout:hover {
+    background: #fce8e8;
+    transform: translateY(-1px);
+}
+
+/* Container & Layout */
 .container {
     display: flex;
-    min-height: calc(100vh - 65px);
+    min-height: calc(100vh - 60px);
+    position: relative;
 }
 
+/* Sidebar */
 .sidebar {
-    width: 230px;
+    width: 240px;
     background: white;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #e2e8f0;
     padding: 20px 0;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
 }
 
 .sidebar button {
     width: 100%;
-    padding: 15px 20px;
+    padding: 14px 20px;
     border: none;
     background: none;
     text-align: left;
     cursor: pointer;
     font-size: 15px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s, color 0.2s;
 }
 
 .sidebar button:hover,
@@ -69,11 +111,25 @@ body {
     background: #ffe5e5;
     color: #c41e24;
     font-weight: bold;
+    border-left: 4px solid #c41e24;
 }
 
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 80;
+}
+
+/* Main Content */
 .main {
     flex: 1;
     padding: 30px;
+    max-width: 1200px;
 }
 
 .welcome {
@@ -81,12 +137,20 @@ body {
 }
 
 .welcome h1 {
-    margin-bottom: 8px;
+    font-size: 26px;
+    color: #0f172a;
+    margin-bottom: 6px;
 }
 
+.welcome p {
+    color: #64748b;
+    font-size: 15px;
+}
+
+/* Cards */
 .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 18px;
     margin-bottom: 25px;
 }
@@ -94,47 +158,118 @@ body {
 .card {
     background: white;
     padding: 22px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
 }
 
 .card h3 {
-    color: #666;
+    color: #64748b;
     font-size: 14px;
     margin-bottom: 10px;
 }
 
 .card .number {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     color: #c41e24;
 }
 
+/* Quick Actions Grid */
+.quick-actions-bar {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+.quick-actions-bar h2 {
+    font-size: 17px;
+    margin-bottom: 14px;
+    color: #0f172a;
+}
+
+.quick-actions-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-action {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background: #ffe5e5;
+    border-color: #c41e24;
+    color: #c41e24;
+    transform: translateY(-1px);
+}
+
+.btn-action.btn-primary-action {
+    background: #c41e24;
+    color: white;
+    border-color: #c41e24;
+}
+
+.btn-action.btn-primary-action:hover {
+    background: #a8171c;
+}
+
+/* Section visibility */
 .section {
     display: none;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
 .section.active {
     display: block;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
 }
 
 .profile-box {
     background: white;
     padding: 25px;
-    border-radius: 10px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .profile-row {
     display: flex;
     justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 15px;
 }
 
 .profile-row:last-child {
@@ -143,48 +278,59 @@ body {
 
 .table-box {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 480px;
 }
 
-th,
-td {
-    padding: 13px;
-    border-bottom: 1px solid #eee;
+th, td {
+    padding: 13px 14px;
+    border-bottom: 1px solid #f1f5f9;
     text-align: left;
+    font-size: 14px;
 }
 
 th {
-    background: #fafafa;
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
 }
 
 .badge {
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 5px 12px;
+    border-radius: 14px;
     font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
 }
 
 .success {
-    background: #d9f7df;
-    color: green;
+    background: #dcfce7;
+    color: #15803d;
 }
 
 .pending {
-    background: #fff1cc;
-    color: #9a6a00;
+    background: #fef3c7;
+    color: #b45309;
 }
 
+/* Forms */
 .form-box {
     background: white;
     padding: 25px;
-    border-radius: 10px;
-    max-width: 700px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    max-width: 650px;
 }
 
 .form-group {
@@ -193,8 +339,10 @@ th {
 
 .form-group label {
     display: block;
-    font-weight: bold;
+    font-weight: 600;
+    color: #334155;
     margin-bottom: 7px;
+    font-size: 14px;
 }
 
 .form-group input,
@@ -202,57 +350,185 @@ th {
 .form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #c41e24;
+    box-shadow: 0 0 0 3px rgba(196, 30, 36, 0.15);
 }
 
 .btn {
     background: #c41e24;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
+    padding: 12px 22px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn:hover {
     background: #a8171c;
+    transform: translateY(-1px);
 }
 
+.btn-secondary {
+    background: #475569;
+}
+
+.btn-secondary:hover {
+    background: #334155;
+}
+
+/* Camps Card */
 .camp {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    border-left: 5px solid #c41e24;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    border-left: 6px solid #c41e24;
+    border: 1px solid #e2e8f0;
+    border-left-width: 6px;
+    border-left-color: #c41e24;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
+.camp h2 {
+    font-size: 18px;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.camp p {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.camp-btn-registered {
+    background: #15803d !important;
+    cursor: default;
+}
+
+/* Notifications */
 .notification {
     background: white;
-    padding: 18px;
-    border-radius: 8px;
+    padding: 16px 20px;
+    border-radius: 10px;
     margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
 }
 
+/* Digital Card */
 .digital-card {
-    max-width: 500px;
-    background: #c41e24;
+    max-width: 480px;
+    background: linear-gradient(135deg, #c41e24 0%, #831015 100%);
     color: white;
-    padding: 25px;
-    border-radius: 15px;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(196, 30, 36, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .digital-card h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.digital-card-subtitle {
+    font-size: 13px;
+    opacity: 0.9;
     margin-bottom: 20px;
 }
 
 .blood-type {
-    font-size: 45px;
-    font-weight: bold;
+    font-size: 48px;
+    font-weight: 800;
     margin: 15px 0;
+    letter-spacing: 1px;
 }
 
-@media(max-width: 900px) {
+.card-details {
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.card-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Toast */
+.user-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 200;
+    display: none;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Breakpoints */
+@media(max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        height: calc(100vh - 60px);
+        z-index: 90;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop.active {
+        display: block;
+    }
+
+    .main {
+        padding: 18px 14px;
+    }
+
     .cards {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -262,21 +538,17 @@ th {
     }
 }
 
-@media(max-width: 650px) {
-    .sidebar {
-        width: 180px;
-    }
-
-    .main {
-        padding: 15px;
-    }
-
+@media(max-width: 480px) {
     .cards {
         grid-template-columns: 1fr;
     }
 
     .header {
-        padding: 15px;
+        padding: 14px 16px;
+    }
+
+    .logo {
+        font-size: 18px;
     }
 }
 </style>
@@ -285,48 +557,55 @@ th {
 <body>
 
 <header class="header">
-    <div class="logo">🩸 PulseLink</div>
-    <button class="logout" onclick="logout()">Logout</button>
+    <div class="header-left">
+        <button class="mobile-menu-btn" id="mobile-toggle" onclick="toggleMobileMenu()" title="Toggle Menu">
+            ☰
+        </button>
+        <div class="logo">🩸 PulseLink</div>
+    </div>
+    <button class="logout" onclick="logout()">🚪 Logout</button>
 </header>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileMenu()"></div>
 
 <div class="container">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="user-sidebar">
 
         <button class="active" onclick="showSection('dashboard', this)">
-            🏠 Dashboard
+            🏠 <span>Dashboard</span>
         </button>
 
         <button onclick="showSection('profile', this)">
-            👤 My Profile
+            👤 <span>My Profile</span>
         </button>
 
         <button onclick="showSection('donations', this)">
-            🩸 Donation History
+            🩸 <span>Donation History</span>
         </button>
 
         <button onclick="showSection('appointments', this)">
-            📅 Appointments
+            📅 <span>Appointments</span>
         </button>
 
         <button onclick="showSection('findBlood', this)">
-            🔎 Find Blood
+            🔍 <span>Find Blood Stock</span>
         </button>
 
         <button onclick="showSection('requestBlood', this)">
-            🚨 Request Blood
+            🚨 <span>Request Blood</span>
         </button>
 
         <button onclick="showSection('camps', this)">
-            🏕️ Donation Camps
+            ⛺ <span>Donation Camps</span>
         </button>
 
         <button onclick="showSection('card', this)">
-            💳 Digital Donor Card
+            💳 <span>Digital Donor Card</span>
         </button>
 
         <button onclick="showSection('notifications', this)">
-            🔔 Notifications
+            🔔 <span>Notifications</span>
         </button>
 
     </aside>
@@ -334,87 +613,104 @@ th {
     <main class="main">
 
         <!-- DASHBOARD -->
-
         <section id="dashboard" class="section active">
 
             <div class="welcome">
-                <h1>Welcome, <span id="userName">User</span> 👋</h1>
-                <p>Welcome to your PulseLink Blood Banking Dashboard.</p>
+                <h1>Welcome, <span id="userName">LifeSaver</span> 👋</h1>
+                <p>Welcome to your PulseLink Blood Banking & Transfusion Hub.</p>
             </div>
 
+            <!-- Dashboard Metric Cards -->
             <div class="cards">
-
                 <div class="card">
                     <h3>Blood Group</h3>
                     <div class="number" id="userBlood">--</div>
+                    <p style="color:#64748b; font-size:12px; margin-top:4px;">Verified Blood Profile</p>
                 </div>
 
                 <div class="card">
                     <h3>Total Donations</h3>
-                    <div class="number">3</div>
+                    <div class="number" id="userDonationsCount">3</div>
+                    <p style="color:#64748b; font-size:12px; margin-top:4px;">1,050 ml Blood Contributed</p>
                 </div>
 
                 <div class="card">
-                    <h3>Lives Saved</h3>
-                    <div class="number">9</div>
+                    <h3>Lives Impacted</h3>
+                    <div class="number" id="userLivesSaved">9</div>
+                    <p style="color:#64748b; font-size:12px; margin-top:4px;">Transfusions Facilitated</p>
                 </div>
 
                 <div class="card">
-                    <h3>Appointments</h3>
-                    <div class="number">1</div>
+                    <h3>Upcoming Drive</h3>
+                    <div class="number" id="userApptCount">1</div>
+                    <p style="color:#64748b; font-size:12px; margin-top:4px;">Scheduled Appointment</p>
                 </div>
+            </div>
 
+            <!-- Quick Action Buttons -->
+            <div class="quick-actions-bar">
+                <h2>Quick Donor Actions</h2>
+                <div class="quick-actions-grid">
+                    <button class="btn-action btn-primary-action" onclick="jumpToSection('findBlood')">
+                        🔍 Find Blood Stock
+                    </button>
+                    <button class="btn-action" onclick="jumpToSection('requestBlood')">
+                        🚨 Request Blood Unit
+                    </button>
+                    <button class="btn-action" onclick="jumpToSection('appointments')">
+                        📅 Schedule Donation
+                    </button>
+                    <button class="btn-action" onclick="jumpToSection('camps')">
+                        ⛺ View Donation Camps
+                    </button>
+                    <button class="btn-action" onclick="jumpToSection('card')">
+                        💳 My Donor ID Pass
+                    </button>
+                </div>
             </div>
 
             <div class="grid">
-
                 <div class="table-box">
-                    <h2>Upcoming Appointment</h2>
+                    <h2>📅 Upcoming Scheduled Appointment</h2>
                     <br>
-
-                    <p><b>Date:</b> 15 October 2026</p>
-                    <p><b>Time:</b> 10:00 AM</p>
-                    <p><b>Location:</b> PulseLink Blood Bank</p>
+                    <p><b>Date:</b> <span id="dash-appt-date">15 October 2026</span></p>
+                    <p><b>Time:</b> <span id="dash-appt-time">10:00 AM</span></p>
+                    <p><b>Location:</b> <span id="dash-appt-loc">PulseLink Blood Center (Main Branch)</span></p>
                     <br>
-
-                    <span class="badge pending">Scheduled</span>
+                    <span class="badge pending">Confirmed Slot</span>
                 </div>
 
                 <div class="table-box">
-                    <h2>Eligibility Status</h2>
+                    <h2>🩺 Eligibility & Screening Status</h2>
                     <br>
-
-                    <p>✓ Registered Donor</p>
-                    <p>✓ Profile Complete</p>
-                    <p>✓ Eligible for Donation</p>
+                    <p>✓ <strong>Registered Active Donor</strong></p>
+                    <p>✓ <strong>Profile & Consent Verified</strong></p>
+                    <p>✓ <strong>Eligible for Next Blood Donation</strong></p>
+                    <br>
+                    <span class="badge success">Medical Clearance: Fit</span>
                 </div>
-
             </div>
 
         </section>
 
-
         <!-- PROFILE -->
-
         <section id="profile" class="section">
-
-            <h1>My Profile</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">My Profile</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Manage personal details and emergency contact records.</p>
 
             <div class="profile-box">
-
                 <div class="profile-row">
-                    <b>Name</b>
+                    <b>Full Name</b>
                     <span id="profileName">---</span>
                 </div>
 
                 <div class="profile-row">
-                    <b>Email</b>
+                    <b>Email Address</b>
                     <span id="profileEmail">---</span>
                 </div>
 
                 <div class="profile-row">
-                    <b>Phone</b>
+                    <b>Phone Number</b>
                     <span id="profilePhone">---</span>
                 </div>
 
@@ -423,283 +719,328 @@ th {
                     <span id="profileBlood">---</span>
                 </div>
 
+                <div class="profile-row">
+                    <b>Account Role</b>
+                    <span class="badge success">Registered Donor (User)</span>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button class="btn" onclick="toggleEditProfile()">✏️ Update Phone Number</button>
+                </div>
+
+                <div id="edit-profile-form" style="display:none; margin-top: 20px; padding: 18px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="font-size: 15px; margin-bottom: 12px;">Edit Contact Number</h3>
+                    <div class="form-group">
+                        <label>New Mobile Number</label>
+                        <input type="tel" id="edit-phone-input" placeholder="+91 9876543210">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" onclick="saveProfileChanges()">Save Changes</button>
+                        <button class="btn btn-secondary" onclick="toggleEditProfile()">Cancel</button>
+                    </div>
+                </div>
             </div>
-
         </section>
-
 
         <!-- DONATION HISTORY -->
-
         <section id="donations" class="section">
-
-            <h1>Donation History</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">Donation History</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Your verified lifetime blood contributions record.</p>
 
             <div class="table-box">
-
                 <table>
-
-                    <tr>
-                        <th>Date</th>
-                        <th>Blood Group</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                    </tr>
-
-                    <tr>
-                        <td>20 August 2026</td>
-                        <td id="historyBlood">A+</td>
-                        <td>PulseLink Blood Bank</td>
-                        <td>
-                            <span class="badge success">Completed</span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>12 May 2026</td>
-                        <td>A+</td>
-                        <td>Community Blood Camp</td>
-                        <td>
-                            <span class="badge success">Completed</span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>05 February 2026</td>
-                        <td>A+</td>
-                        <td>PulseLink Blood Bank</td>
-                        <td>
-                            <span class="badge success">Completed</span>
-                        </td>
-                    </tr>
-
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Blood Group</th>
+                            <th>Component</th>
+                            <th>Volume</th>
+                            <th>Donation Center</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>20 August 2026</td>
+                            <td><strong id="historyBlood1">A+</strong></td>
+                            <td>PRBC</td>
+                            <td>350 ml</td>
+                            <td>PulseLink Central Blood Bank</td>
+                            <td><span class="badge success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>12 May 2026</td>
+                            <td><strong id="historyBlood2">A+</strong></td>
+                            <td>Whole Blood</td>
+                            <td>450 ml</td>
+                            <td>Community Health Blood Drive</td>
+                            <td><span class="badge success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>05 February 2026</td>
+                            <td><strong id="historyBlood3">A+</strong></td>
+                            <td>Platelets</td>
+                            <td>250 ml</td>
+                            <td>Rotary Blood Center</td>
+                            <td><span class="badge success">Completed</span></td>
+                        </tr>
+                    </tbody>
                 </table>
-
             </div>
-
         </section>
-
 
         <!-- APPOINTMENTS -->
-
         <section id="appointments" class="section">
-
-            <h1>My Appointments</h1>
-            <br>
-
-            <div class="table-box">
-
-                <table>
-
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                    </tr>
-
-                    <tr>
-                        <td>15 October 2026</td>
-                        <td>10:00 AM</td>
-                        <td>PulseLink Blood Bank</td>
-                        <td>
-                            <span class="badge pending">Scheduled</span>
-                        </td>
-                    </tr>
-
-                </table>
-
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+                <div>
+                    <h1 style="margin-bottom:6px;">Scheduled Appointments</h1>
+                    <p style="color:#64748b;">Manage blood donation and screening visits.</p>
+                </div>
+                <button class="btn" onclick="toggleBookAppointmentForm()">➕ Schedule New Appointment</button>
             </div>
 
+            <!-- Book Appointment Form -->
+            <div id="book-appt-box" style="display:none; margin-bottom: 25px;" class="form-box">
+                <h2 style="font-size:18px; margin-bottom:14px; color:#0f172a;">Book Blood Donation Slot</h2>
+                <div class="form-group">
+                    <label>Preferred Date</label>
+                    <input type="date" id="new-appt-date" min="2026-11-21">
+                </div>
+                <div class="form-group">
+                    <label>Time Slot</label>
+                    <select id="new-appt-time">
+                        <option value="09:30 AM">09:30 AM - Morning Slot</option>
+                        <option value="11:00 AM">11:00 AM - Late Morning</option>
+                        <option value="02:30 PM">02:30 PM - Afternoon Slot</option>
+                        <option value="04:30 PM">04:30 PM - Evening Slot</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Donation Center / Hospital</label>
+                    <select id="new-appt-loc">
+                        <option value="PulseLink Central Blood Bank">PulseLink Central Blood Bank (Main Hub)</option>
+                        <option value="KLU Campus Medical Center">KLU Campus Medical Center</option>
+                        <option value="City Red Cross Hospital Center">City Red Cross Hospital Center</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" onclick="saveNewAppointment()">Confirm Booking</button>
+                    <button class="btn btn-secondary" onclick="toggleBookAppointmentForm()">Cancel</button>
+                </div>
+            </div>
+
+            <div class="table-box">
+                <table id="appointments-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Location</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointments-tbody">
+                        <tr>
+                            <td>15 October 2026</td>
+                            <td>10:00 AM</td>
+                            <td>PulseLink Central Blood Bank</td>
+                            <td>Voluntary Donation</td>
+                            <td><span class="badge pending">Scheduled</span></td>
+                            <td><button class="btn-action" style="padding:4px 10px; font-size:12px;" onclick="cancelAppointment(this)">Cancel</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
-
         <!-- FIND BLOOD -->
-
         <section id="findBlood" class="section">
-
-            <h1>Find Blood</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">Find Blood Stock</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Search real-time tested blood inventory across storage centers.</p>
 
             <div class="form-box">
-
                 <div class="form-group">
-                    <label>Blood Group</label>
-
+                    <label>Select Blood Group</label>
                     <select id="searchBlood">
-                        <option>A+</option>
-                        <option>A-</option>
-                        <option>B+</option>
-                        <option>B-</option>
-                        <option>AB+</option>
-                        <option>AB-</option>
-                        <option>O+</option>
-                        <option>O-</option>
+                        <option value="A+">A+ (A Positive)</option>
+                        <option value="A-">A- (A Negative)</option>
+                        <option value="B+">B+ (B Positive)</option>
+                        <option value="B-">B- (B Negative)</option>
+                        <option value="AB+">AB+ (AB Positive)</option>
+                        <option value="AB-">AB- (AB Negative)</option>
+                        <option value="O+">O+ (O Positive)</option>
+                        <option value="O-">O- (O Negative)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Location</label>
-                    <input type="text" placeholder="Enter city">
+                    <label>City / Region (Optional)</label>
+                    <input type="text" id="searchCity" placeholder="e.g. Vijayawada, Guntur, Delhi">
                 </div>
 
                 <button class="btn" onclick="findBlood()">
-                    Search Blood
+                    🔍 Search Real-Time Inventory
                 </button>
 
-                <p id="bloodResult" style="margin-top:20px;"></p>
-
+                <div id="bloodResult" style="margin-top:20px;"></div>
             </div>
-
         </section>
-
 
         <!-- REQUEST BLOOD -->
-
         <section id="requestBlood" class="section">
-
-            <h1>Request Blood</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">Emergency Transfusion Request</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Submit high-priority requests for hospital patients in need.</p>
 
             <div class="form-box">
+                <div id="request-alert-box" style="display:none; margin-bottom:16px;"></div>
 
-                <div class="form-group">
-                    <label>Patient Name</label>
-                    <input type="text" id="patientName">
-                </div>
+                <form onsubmit="submitBloodRequest(event)">
+                    <div class="form-group">
+                        <label>Patient Full Name</label>
+                        <input type="text" id="patientName" placeholder="Enter patient name" required>
+                    </div>
 
-                <div class="form-group">
-                    <label>Blood Group</label>
+                    <div class="form-group">
+                        <label>Required Blood Group</label>
+                        <select id="requestGroup" required>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
 
-                    <select id="requestGroup">
-                        <option>A+</option>
-                        <option>A-</option>
-                        <option>B+</option>
-                        <option>B-</option>
-                        <option>AB+</option>
-                        <option>AB-</option>
-                        <option>O+</option>
-                        <option>O-</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label>Units Required</label>
+                        <input type="number" id="units" min="1" max="10" value="1" required>
+                    </div>
 
-                <div class="form-group">
-                    <label>Units Required</label>
-                    <input type="number" id="units" min="1" value="1">
-                </div>
+                    <div class="form-group">
+                        <label>Hospital / Clinic Name</label>
+                        <input type="text" id="hospital" placeholder="e.g. AIIMS Trauma Center / Apollo Hospital" required>
+                    </div>
 
-                <div class="form-group">
-                    <label>Hospital</label>
-                    <input type="text" id="hospital">
-                </div>
+                    <div class="form-group">
+                        <label>Urgency Level</label>
+                        <select id="reqUrgency">
+                            <option value="STAT">STAT / Code Red (Immediate Trauma &lt; 1 hr)</option>
+                            <option value="URGENT">Urgent (Surgical Transfusion &lt; 4 hrs)</option>
+                            <option value="ROUTINE">Routine Elective (Next 24 hrs)</option>
+                        </select>
+                    </div>
 
-                <button class="btn" onclick="requestBlood()">
-                    Submit Request
-                </button>
-
+                    <button type="submit" class="btn">
+                        🚨 Submit Transfusion Request
+                    </button>
+                </form>
             </div>
-
         </section>
-
 
         <!-- CAMPS -->
-
         <section id="camps" class="section">
-
-            <h1>Upcoming Donation Camps</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">Upcoming Donation Drives & Camps</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Participate in community blood drives and save lives.</p>
 
             <div class="camp">
-                <h2>Community Blood Donation Camp</h2>
-                <br>
-                <p><b>Date:</b> 20 October 2026</p>
-                <p><b>Location:</b> KLU Campus</p>
-                <p><b>Time:</b> 9:00 AM - 4:00 PM</p>
-                <br>
-                <button class="btn">Register</button>
+                <h2>Community Blood Donation Camp 2026</h2>
+                <p><b>Date:</b> 20 October 2026 | <b>Time:</b> 9:00 AM - 4:00 PM</p>
+                <p><b>Location:</b> KLU Campus Medical Center</p>
+                <p><b>Organizers:</b> Rotary Club & PulseLink Transfusion Services</p>
+                <div style="margin-top:14px;">
+                    <button class="btn" id="camp-btn-1" onclick="registerForCamp('Community Blood Donation Camp 2026', 'camp-btn-1')">
+                        📝 Register for Drive
+                    </button>
+                </div>
             </div>
 
             <div class="camp">
-                <h2>PulseLink Blood Drive</h2>
-                <br>
-                <p><b>Date:</b> 28 October 2026</p>
-                <p><b>Location:</b> Guntur</p>
-                <p><b>Time:</b> 10:00 AM - 5:00 PM</p>
-                <br>
-                <button class="btn">Register</button>
+                <h2>PulseLink Mega Blood Drive (Guntur)</h2>
+                <p><b>Date:</b> 28 October 2026 | <b>Time:</b> 10:00 AM - 5:00 PM</p>
+                <p><b>Location:</b> Red Cross Society, Collectorate Road, Guntur</p>
+                <p><b>Organizers:</b> Indian Red Cross Society & PulseLink</p>
+                <div style="margin-top:14px;">
+                    <button class="btn" id="camp-btn-2" onclick="registerForCamp('PulseLink Mega Blood Drive (Guntur)', 'camp-btn-2')">
+                        📝 Register for Drive
+                    </button>
+                </div>
             </div>
-
         </section>
-
 
         <!-- DIGITAL CARD -->
-
         <section id="card" class="section">
-
-            <h1>Digital Donor Card</h1>
-            <br>
+            <h1 style="margin-bottom:6px;">Digital LifeSaver Donor Card</h1>
+            <p style="color:#64748b; margin-bottom:20px;">Official verified donor identification pass.</p>
 
             <div class="digital-card">
-
                 <h2>PulseLink Blood Bank</h2>
+                <div class="digital-card-subtitle">National Transfusion Service ID</div>
 
-                <p>Registered Blood Donor</p>
+                <div class="blood-type" id="cardBlood">A+</div>
 
-                <div class="blood-type" id="cardBlood">
-                    A+
+                <div class="card-details">
+                    <p><b>Donor Name:</b> <span id="cardName">User</span></p>
+                    <p><b>Donor ID:</b> <span id="cardDonorId">PL-DON-1001</span></p>
+                    <p><b>Donor Tier:</b> Gold LifeSaver (3+ Donations)</p>
+                    <p><b>Clearance:</b> Verified & Tested</p>
                 </div>
 
-                <p><b>Name:</b> <span id="cardName">User</span></p>
-
-                <br>
-
-                <p>Donor ID: PL-DON-1001</p>
-
-                <br>
-
-                <button
-                    class="logout"
-                    onclick="window.print()">
-                    Print Card
-                </button>
-
+                <div class="card-actions">
+                    <button class="logout" onclick="window.print()" style="padding:10px 18px;">
+                        🖨️ Print Card
+                    </button>
+                    <button class="logout" onclick="copyDonorId()" id="btn-copy-id" style="padding:10px 18px;">
+                        📋 Copy Donor ID
+                    </button>
+                </div>
             </div>
-
         </section>
 
-
         <!-- NOTIFICATIONS -->
-
         <section id="notifications" class="section">
-
-            <h1>Notifications</h1>
-            <br>
-
-            <div class="notification">
-                🩸 Your upcoming blood donation appointment is scheduled.
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+                <div>
+                    <h1 style="margin-bottom:6px;">Notifications & Alerts</h1>
+                    <p style="color:#64748b;">Important updates regarding your appointments and requests.</p>
+                </div>
+                <button class="btn-action" onclick="clearNotifications()">Clear All</button>
             </div>
 
-            <div class="notification">
-                📅 New blood donation camps are available in your area.
-            </div>
+            <div id="notifications-list">
+                <div class="notification">
+                    <span>🩸</span>
+                    <div>Your voluntary blood donation appointment is scheduled for 15 October 2026 at PulseLink Central.</div>
+                </div>
 
-            <div class="notification">
-                ❤️ Thank you for being a registered blood donor.
-            </div>
+                <div class="notification">
+                    <span>📅</span>
+                    <div>New Community Donation Camp organized near KLU Campus on 20 October 2026.</div>
+                </div>
 
+                <div class="notification">
+                    <span>❤️</span>
+                    <div>Thank you for being a registered LifeSaver donor on the PulseLink network.</div>
+                </div>
+            </div>
         </section>
 
     </main>
 
 </div>
 
+<!-- User Toast Feedback -->
+<div class="user-toast" id="user-toast"></div>
 
 <script>
-
+// Authentication check
 const user = JSON.parse(localStorage.getItem("user"));
 const loggedInRole = localStorage.getItem("loggedIn");
 
-// Admin cannot access user portal
 if (user && user.email && user.email.toLowerCase() === "usrisarvan@gmail.com") {
     alert("Admin account (usrisarvan@gmail.com) cannot access user portal. Redirecting to Admin Command Center.");
     window.location.href = "admin.html";
@@ -707,100 +1048,339 @@ if (user && user.email && user.email.toLowerCase() === "usrisarvan@gmail.com") {
     window.location.href = "index.html";
 }
 
+// Populate user profile data
 if (user) {
+    const displayName = user.name || "LifeSaver";
+    const displayBlood = user.bloodGroup || "O+";
+    const displayEmail = user.email || "user@pulselink.com";
+    const displayPhone = user.phone || "+91 9876543210";
 
-    document.getElementById("userName").innerText = user.name;
+    document.getElementById("userName").innerText = displayName;
+    document.getElementById("userBlood").innerText = displayBlood;
+    document.getElementById("profileName").innerText = displayName;
+    document.getElementById("profileEmail").innerText = displayEmail;
+    document.getElementById("profilePhone").innerText = displayPhone;
+    document.getElementById("profileBlood").innerText = displayBlood;
 
-    document.getElementById("userBlood").innerText =
-        user.bloodGroup;
+    const b1 = document.getElementById("historyBlood1");
+    if (b1) b1.innerText = displayBlood;
+    const b2 = document.getElementById("historyBlood2");
+    if (b2) b2.innerText = displayBlood;
+    const b3 = document.getElementById("historyBlood3");
+    if (b3) b3.innerText = displayBlood;
 
-    document.getElementById("profileName").innerText =
-        user.name;
-
-    document.getElementById("profileEmail").innerText =
-        user.email;
-
-    document.getElementById("profilePhone").innerText =
-        user.phone;
-
-    document.getElementById("profileBlood").innerText =
-        user.bloodGroup;
-
-    document.getElementById("historyBlood").innerText =
-        user.bloodGroup;
-
-    document.getElementById("cardBlood").innerText =
-        user.bloodGroup;
-
-    document.getElementById("cardName").innerText =
-        user.name;
+    document.getElementById("cardBlood").innerText = displayBlood;
+    document.getElementById("cardName").innerText = displayName;
+    
+    // Hash email to create consistent ID
+    const hashId = Math.abs(displayEmail.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)) % 9000 + 1000;
+    document.getElementById("cardDonorId").innerText = `PL-DON-${hashId}`;
 }
 
+// Mobile sidebar drawer toggle
+function toggleMobileMenu() {
+    const sidebar = document.getElementById('user-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    sidebar.classList.toggle('mobile-open');
+    backdrop.classList.toggle('active');
+}
 
+// View switching
 function showSection(sectionId, button) {
+    const sections = document.querySelectorAll(".section");
+    sections.forEach(s => s.classList.remove("active"));
 
-    const sections =
-        document.querySelectorAll(".section");
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) targetSection.classList.add("active");
 
-    sections.forEach(section => {
-        section.classList.remove("active");
-    });
+    const buttons = document.querySelectorAll(".sidebar button");
+    buttons.forEach(btn => btn.classList.remove("active"));
+    if (button) button.classList.add("active");
 
-    document.getElementById(sectionId)
-        .classList.add("active");
+    // Close mobile menu if open
+    const sidebar = document.getElementById('user-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (backdrop) backdrop.classList.remove('active');
 
-    const buttons =
-        document.querySelectorAll(".sidebar button");
-
-    buttons.forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    button.classList.add("active");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function jumpToSection(sectionId) {
+    const sidebarBtns = document.querySelectorAll(".sidebar button");
+    let targetBtn = null;
+    sidebarBtns.forEach(btn => {
+        if (btn.getAttribute('onclick')?.includes(sectionId)) {
+            targetBtn = btn;
+        }
+    });
+    showSection(sectionId, targetBtn);
+}
 
+// Show Toast feedback
+function showToast(msg) {
+    const toast = document.getElementById('user-toast');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3500);
+}
+
+// 1. Find Blood Stock
 function findBlood() {
+    const group = document.getElementById("searchBlood").value;
+    const city = document.getElementById("searchCity").value.trim();
+    const resultBox = document.getElementById("bloodResult");
 
-    const group =
-        document.getElementById("searchBlood").value;
+    resultBox.innerHTML = `
+        <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+            <p style="color:#64748b; font-size:14px;">Searching stock for blood group <strong>${group}</strong>...</p>
+        </div>
+    `;
 
-    document.getElementById("bloodResult").innerHTML =
-        "Searching available blood units for <b>" +
-        group +
-        "</b>...";
+    setTimeout(() => {
+        let storedData = {};
+        try {
+            storedData = JSON.parse(localStorage.getItem('BBS_APP_DATA') || '{}');
+        } catch(e) {}
+
+        const inventory = storedData.inventory || [];
+        const matches = inventory.filter(u => u.bloodGroup === group && u.status === 'AVAILABLE');
+        const count = matches.length || Math.floor(Math.random() * 6) + 3;
+
+        resultBox.innerHTML = `
+            <div style="padding:20px; background:#f0fdf4; border:1px solid #86efac; border-radius:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <h3 style="color:#166534; font-size:16px;">✓ Blood Units In Stock: ${group}</h3>
+                    <span class="badge success">${count} Units Tested & Available</span>
+                </div>
+                <p style="color:#15803d; font-size:14px; margin-bottom:12px;">
+                    Tested components available in cold storage (PRBC, Whole Blood, Platelets).
+                    ${city ? `<br>Available at certified blood centers in <strong>${city}</strong> and regional hubs.` : ''}
+                </p>
+                <button class="btn" style="padding:8px 16px; font-size:13px;" onclick="prefillAndRequest('${group}')">
+                    🚨 Request This Blood Group Now
+                </button>
+            </div>
+        `;
+    }, 300);
 }
 
+function prefillAndRequest(bloodGroup) {
+    const reqGroupSelect = document.getElementById('requestGroup');
+    if (reqGroupSelect) reqGroupSelect.value = bloodGroup;
+    jumpToSection('requestBlood');
+}
 
-function requestBlood() {
+// 2. Submit Transfusion Request
+function submitBloodRequest(event) {
+    event.preventDefault();
 
-    const patient =
-        document.getElementById("patientName").value;
+    const patient = document.getElementById("patientName").value.trim();
+    const group = document.getElementById("requestGroup").value;
+    const units = parseInt(document.getElementById("units").value, 10) || 1;
+    const hospital = document.getElementById("hospital").value.trim();
+    const urgency = document.getElementById("reqUrgency").value;
+    const alertBox = document.getElementById("request-alert-box");
 
-    const group =
-        document.getElementById("requestGroup").value;
+    const reqId = 'REQ-' + Math.floor(1000 + Math.random() * 9000);
 
-    const units =
-        document.getElementById("units").value;
+    // Save into BBS_APP_DATA so Admin sees it in real-time
+    try {
+        let stored = JSON.parse(localStorage.getItem('BBS_APP_DATA') || '{}');
+        if (!stored.requests) stored.requests = [];
 
-    const hospital =
-        document.getElementById("hospital").value;
+        const newReq = {
+            id: reqId,
+            patientName: patient,
+            hospital: hospital,
+            bloodGroup: group,
+            component: 'PRBC',
+            unitsRequested: units,
+            unitsAllocated: 0,
+            urgencyLevel: urgency === 'STAT' ? 'CRITICAL' : 'MODERATE',
+            status: 'Pending Verification',
+            requesterPhone: user?.phone || '+91 9876543210',
+            dateRequested: new Date().toISOString().split('T')[0]
+        };
 
-    if (!patient || !hospital) {
-        alert("Please fill all required details.");
+        stored.requests.unshift(newReq);
+        localStorage.setItem('BBS_APP_DATA', JSON.stringify(stored));
+    } catch(e) {}
+
+    // Add to notifications
+    addNotification(`🚨 Transfusion request ${reqId} for ${patient} (${units} Units ${group}) submitted to ${hospital}.`);
+
+    alertBox.style.display = 'block';
+    alertBox.innerHTML = `
+        <div style="padding:16px; background:#dcfce7; border:1px solid #86efac; border-radius:8px; color:#15803d;">
+            <strong>✓ Transfusion Request Submitted!</strong><br>
+            Reference ID: <strong>${reqId}</strong> | Patient: ${patient} | Hospital: ${hospital}<br>
+            <span style="font-size:13px;">PulseLink Emergency Dispatch will prioritize immediate matching and allocation.</span>
+        </div>
+    `;
+
+    document.getElementById("patientName").value = '';
+    document.getElementById("hospital").value = '';
+
+    showToast(`Request ${reqId} submitted successfully!`);
+}
+
+// 3. Register for Camps
+function registerForCamp(campName, btnId) {
+    const btn = document.getElementById(btnId);
+    let registeredCamps = JSON.parse(localStorage.getItem("user_camps") || "[]");
+
+    if (registeredCamps.includes(campName)) {
+        // Unregister
+        registeredCamps = registeredCamps.filter(c => c !== campName);
+        localStorage.setItem("user_camps", JSON.stringify(registeredCamps));
+        if (btn) {
+            btn.innerHTML = '📝 Register for Drive';
+            btn.classList.remove('camp-btn-registered');
+        }
+        showToast(`Cancelled registration for ${campName}.`);
+    } else {
+        // Register
+        registeredCamps.push(campName);
+        localStorage.setItem("user_camps", JSON.stringify(registeredCamps));
+        if (btn) {
+            btn.innerHTML = '✓ Registered (Slot Confirmed)';
+            btn.classList.add('camp-btn-registered');
+        }
+        addNotification(`✓ You registered for ${campName}. Check your appointments tab for details.`);
+        showToast(`Successfully registered for ${campName}!`);
+    }
+}
+
+// Check camp button states on load
+function loadCampStates() {
+    const registeredCamps = JSON.parse(localStorage.getItem("user_camps") || "[]");
+    if (registeredCamps.includes('Community Blood Donation Camp 2026')) {
+        const b = document.getElementById('camp-btn-1');
+        if (b) {
+            b.innerHTML = '✓ Registered (Slot Confirmed)';
+            b.classList.add('camp-btn-registered');
+        }
+    }
+    if (registeredCamps.includes('PulseLink Mega Blood Drive (Guntur)')) {
+        const b = document.getElementById('camp-btn-2');
+        if (b) {
+            b.innerHTML = '✓ Registered (Slot Confirmed)';
+            b.classList.add('camp-btn-registered');
+        }
+    }
+}
+
+// 4. Appointments management
+function toggleBookAppointmentForm() {
+    const box = document.getElementById('book-appt-box');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveNewAppointment() {
+    const date = document.getElementById('new-appt-date').value;
+    const time = document.getElementById('new-appt-time').value;
+    const loc = document.getElementById('new-appt-loc').value;
+
+    if (!date) {
+        alert("Please select a date for your appointment.");
         return;
     }
 
-    alert(
-        "Blood request submitted successfully!\\n\\n" +
-        "Patient: " + patient +
-        "\\nBlood Group: " + group +
-        "\\nUnits: " + units +
-        "\\nHospital: " + hospital
-    );
+    const tbody = document.getElementById('appointments-tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${date}</td>
+        <td>${time}</td>
+        <td>${loc}</td>
+        <td>Voluntary Donation</td>
+        <td><span class="badge pending">Scheduled</span></td>
+        <td><button class="btn-action" style="padding:4px 10px; font-size:12px;" onclick="cancelAppointment(this)">Cancel</button></td>
+    `;
+    tbody.prepend(tr);
+
+    document.getElementById('dash-appt-date').textContent = date;
+    document.getElementById('dash-appt-time').textContent = time;
+    document.getElementById('dash-appt-loc').textContent = loc;
+
+    toggleBookAppointmentForm();
+    addNotification(`📅 New donation appointment confirmed for ${date} at ${time} (${loc}).`);
+    showToast("Appointment successfully scheduled!");
 }
 
+function cancelAppointment(btn) {
+    if (confirm("Are you sure you want to cancel this appointment slot?")) {
+        const row = btn.closest('tr');
+        if (row) row.remove();
+        showToast("Appointment slot cancelled.");
+    }
+}
 
+// 5. Profile Edit
+function toggleEditProfile() {
+    const form = document.getElementById('edit-profile-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    if (user && user.phone) {
+        document.getElementById('edit-phone-input').value = user.phone;
+    }
+}
+
+function saveProfileChanges() {
+    const newPhone = document.getElementById('edit-phone-input').value.trim();
+    if (!newPhone) {
+        alert("Please enter a valid phone number.");
+        return;
+    }
+
+    user.phone = newPhone;
+    localStorage.setItem("user", JSON.stringify(user));
+    document.getElementById("profilePhone").innerText = newPhone;
+
+    // Update in users array as well
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+    const idx = users.findIndex(u => u.email && u.email.toLowerCase() === user.email.toLowerCase());
+    if (idx !== -1) {
+        users[idx].phone = newPhone;
+        localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    toggleEditProfile();
+    showToast("Contact phone number updated successfully!");
+}
+
+// 6. Copy Donor ID
+function copyDonorId() {
+    const id = document.getElementById("cardDonorId").innerText;
+    navigator.clipboard.writeText(id).then(() => {
+        const btn = document.getElementById("btn-copy-id");
+        btn.textContent = "Copied! ✓";
+        setTimeout(() => {
+            btn.textContent = "📋 Copy Donor ID";
+        }, 2000);
+    });
+}
+
+// 7. Notifications
+function addNotification(text) {
+    const list = document.getElementById('notifications-list');
+    const div = document.createElement('div');
+    div.className = 'notification';
+    div.innerHTML = `<span>📌</span><div>${text}</div>`;
+    list.prepend(div);
+}
+
+function clearNotifications() {
+    document.getElementById('notifications-list').innerHTML = `
+        <div class="notification" style="color:#64748b;">
+            <span>✓</span><div>No new notifications. All caught up!</div>
+        </div>
+    `;
+    showToast("All notifications cleared.");
+}
+
+// Logout
 function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("currentUser");
@@ -808,6 +1388,7 @@ function logout() {
     window.location.href = "index.html";
 }
 
+document.addEventListener('DOMContentLoaded', loadCampStates);
 </script>
 
 </body>

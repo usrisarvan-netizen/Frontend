@@ -125,6 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Handle URL query parameters (e.g. admin.html?view=inventory)
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetView = urlParams.get('view');
+  if (targetView && viewTitles[targetView]) {
+    switchView(targetView);
+  }
+
   // Shortcut from Emergency Banner or Quick Button
   const btnQuickEmergency = document.getElementById('btn-quick-emergency');
   if (btnQuickEmergency) {
