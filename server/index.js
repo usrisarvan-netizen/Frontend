@@ -161,6 +161,7 @@ async function sendWhatsAppWeb(toNumber, messageBody) {
 async function sendWelcomeEmail(toEmail, name, bloodGroup, messageBody) {
   const smtpUser = process.env.SMTP_USER?.trim()
   const smtpPass = process.env.SMTP_PASS?.trim()
+  const smtpFrom = process.env.SMTP_FROM?.trim() || smtpUser
   const smtpHost = process.env.SMTP_HOST?.trim() || 'smtp.gmail.com'
   const smtpPort = Number(process.env.SMTP_PORT || 587)
 
@@ -190,7 +191,7 @@ async function sendWelcomeEmail(toEmail, name, bloodGroup, messageBody) {
 
     const bloodLine = bloodGroup ? `<p><strong>Blood Group:</strong> ${bloodGroup}</p>` : ''
     const info = await transporter.sendMail({
-      from: `"PulseLink Blood Bank" <${smtpUser}>`,
+      from: `"PulseLink Blood Bank" <${smtpFrom}>`,
       to: toEmail,
       subject: 'Welcome to PulseLink Blood Bank — Join Our Donor Group',
       text: messageBody,
