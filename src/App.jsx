@@ -85,7 +85,7 @@ function Login() {
 
 function Register() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', phone: '', bloodGroup: '', channel: 'both', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', bloodGroup: '', password: '', confirmPassword: '' })
   const [message, setMessage] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [registeredInfo, setRegisteredInfo] = useState(null)
@@ -120,7 +120,6 @@ function Register() {
     const phoneDigitsOnly = form.phone.replace(/\D/g, '')
     const formattedPhone = phoneDigitsOnly.length === 10 ? `+91${phoneDigitsOnly}` : `+${phoneDigitsOnly}`
     let whatsappDirectUrl = `https://wa.me/${formattedPhone.replace('+', '')}?text=${encodeURIComponent(preview)}`
-    let smsDirectUrl = `sms:${formattedPhone}?body=${encodeURIComponent(preview)}`
 
     try {
       const response = await fetch('/api/welcome-message', {
@@ -131,25 +130,19 @@ function Register() {
           email,
           phone: form.phone.trim(),
           bloodGroup: form.bloodGroup,
-          channel: form.channel,
+          channel: 'whatsapp',
         }),
       })
       const data = await response.json().catch(() => ({}))
       if (data.groupLink) groupLink = data.groupLink
       if (data.preview) preview = data.preview
       if (data.whatsappDirectUrl) whatsappDirectUrl = data.whatsappDirectUrl
-      if (data.smsDirectUrl) smsDirectUrl = data.smsDirectUrl
       if (response.ok) {
         const channelsList = data.results ? Object.values(data.results) : []
         if (channelsList.length > 0) {
           deliveryStatus = channelsList
             .map((item) => {
-              const label =
-                item.channel === 'whatsapp'
-                  ? 'WhatsApp'
-                  : item.channel === 'email'
-                    ? 'Email'
-                    : 'SMS'
+              const label = item.channel === 'email' ? 'Email' : 'WhatsApp'
               if (!item.success) return `${label}: ${item.error || 'failed'}`
               return item.simulated
                 ? `${label}: simulated for ${item.to} (add SMTP_USER & SMTP_PASS in server/.env for real inbox delivery)`
@@ -165,11 +158,11 @@ function Register() {
         deliveryStatus =
           data.error ||
           (response.status >= 500
-            ? 'Notification server (port 4000) is not running. Use the 1-click buttons below or run: npm run dev:server'
-            : 'Could not auto-send right now — use the 1-click WhatsApp/SMS buttons below.')
+            ? 'Notification server (port 4000) is not running. Use the 1-click button below or run: npm run dev:server'
+            : 'Could not auto-send right now — use the 1-click WhatsApp button below.')
       }
     } catch {
-      deliveryStatus = 'Notification server is offline — use the 1-click WhatsApp/SMS buttons below or run: npm run dev:server'
+      deliveryStatus = 'Notification server is offline — use the 1-click WhatsApp button below or run: npm run dev:server'
     } finally {
       setSubmitting(false)
     }
@@ -179,7 +172,6 @@ function Register() {
       email,
       phone: form.phone.trim(),
       bloodGroup: form.bloodGroup,
-      channel: form.channel,
       password: form.password,
       role: 'user',
       welcomeGroupLink: groupLink,
@@ -191,12 +183,12 @@ function Register() {
     setMessage({ type: 'success', text: 'Registration successful!' })
     setRegisteredInfo({
       name: user.name,
+      email: user.email,
       phone: user.phone,
       groupLink,
       deliveryStatus,
       preview,
       whatsappDirectUrl,
-      smsDirectUrl,
     })
   }
 
@@ -205,20 +197,18 @@ function Register() {
       <AuthCard register>
         <div className="message success">Registration successful! Welcome, {registeredInfo.name}.</div>
         <div className="welcome-box">
-          <p style={{ fontSize: 14 }}><strong>Mobile Notification:</strong> {registeredInfo.deliveryStatus}</p>
+          <p style={{ fontSize: 14 }}><strong>Notifications:</strong> {registeredInfo.deliveryStatus}</p>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+            Group details and invite link have also been sent to <strong>{registeredInfo.email}</strong>.
+          </p>
           <div className="welcome-preview">{registeredInfo.preview}</div>
           <div className="welcome-actions">
             <a className="btn btn-primary" href={registeredInfo.groupLink} target="_blank" rel="noopener noreferrer">
               Join Community Group
             </a>
-            <div className="welcome-direct-row">
-              <a className="btn btn-secondary" href={registeredInfo.whatsappDirectUrl} target="_blank" rel="noopener noreferrer">
-                Send via WhatsApp
-              </a>
-              <a className="btn btn-secondary" href={registeredInfo.smsDirectUrl}>
-                Send via SMS
-              </a>
-            </div>
+            <a className="btn btn-secondary" href={registeredInfo.whatsappDirectUrl} target="_blank" rel="noopener noreferrer">
+              Send via WhatsApp
+            </a>
             <button className="btn btn-secondary" type="button" onClick={() => navigate('/')}>
               Continue to Login
             </button>
@@ -237,12 +227,6 @@ function Register() {
         ))}
         <label htmlFor="bloodGroup">Blood Group</label>
         <select id="bloodGroup" name="bloodGroup" value={form.bloodGroup} onChange={update} required><option value="">Select Blood Group</option>{['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g}>{g}</option>)}</select>
-        <label htmlFor="channel">Welcome Message Channel</label>
-        <select id="channel" name="channel" value={form.channel} onChange={update}>
-          <option value="both">WhatsApp &amp; Mobile SMS (Both)</option>
-          <option value="whatsapp">WhatsApp Only</option>
-          <option value="sms">Mobile SMS Only</option>
-        </select>
         <button className="btn btn-primary primary" type="submit" disabled={submitting}>
           {submitting ? 'Creating Account...' : 'Create Account'}
         </button>
