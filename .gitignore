@@ -2,4 +2,9 @@
 Thumbs.db
 *.log
 node_modules/
+server/node_modules/
+server/.wwebjs_auth/
+server/.wwebjs_cache/
+.env
+server/.env
 dist/

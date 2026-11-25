@@ -3,6 +3,8 @@ import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 const ADMIN_EMAIL = 'usrisarvan@gmail.com'
 const ADMIN_PASSWORD = 'Sri@4321'
+const DEFAULT_GROUP_LINK =
+  import.meta.env.VITE_GROUP_LINK || 'https://chat.whatsapp.com/E5M5aok7zrEGppgG9O8sD6'
 
 function getJson(key, fallback) {
   try {
@@ -83,14 +85,22 @@ function Login() {
 
 function Register() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', phone: '', bloodGroup: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', bloodGroup: '', channel: 'both', password: '', confirmPassword: '' })
   const [message, setMessage] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [registeredInfo, setRegisteredInfo] = useState(null)
   const update = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault()
+    setMessage(null)
     const email = form.email.trim()
     if (email.toLowerCase() === ADMIN_EMAIL) {
       setMessage({ type: 'error', text: 'This email is reserved for the administrator.' })
+      return
+    }
+    const phoneDigits = form.phone.replace(/\D/g, '')
+    if (phoneDigits.length < 10) {
+      setMessage({ type: 'error', text: 'Please enter a valid 10-digit mobile number (with optional country code).' })
       return
     }
     if (form.password !== form.confirmPassword) {
@@ -102,23 +112,140 @@ function Register() {
       setMessage({ type: 'error', text: 'An account with this email already exists.' })
       return
     }
-    const user = { name: form.name.trim(), email, phone: form.phone.trim(), bloodGroup: form.bloodGroup, password: form.password, role: 'user' }
+
+    setSubmitting(true)
+    let groupLink = DEFAULT_GROUP_LINK
+    let deliveryStatus = ''
+    let preview = `Welcome to PulseLink Blood Bank, ${form.name.trim()}!\nThank you for registering as a life saver.\nJoin our WhatsApp donor group here: ${groupLink}`
+    const phoneDigitsOnly = form.phone.replace(/\D/g, '')
+    const formattedPhone = phoneDigitsOnly.length === 10 ? `+91${phoneDigitsOnly}` : `+${phoneDigitsOnly}`
+    let whatsappDirectUrl = `https://wa.me/${formattedPhone.replace('+', '')}?text=${encodeURIComponent(preview)}`
+    let smsDirectUrl = `sms:${formattedPhone}?body=${encodeURIComponent(preview)}`
+
+    try {
+      const response = await fetch('/api/welcome-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email,
+          phone: form.phone.trim(),
+          bloodGroup: form.bloodGroup,
+          channel: form.channel,
+        }),
+      })
+      const data = await response.json().catch(() => ({}))
+      if (data.groupLink) groupLink = data.groupLink
+      if (data.preview) preview = data.preview
+      if (data.whatsappDirectUrl) whatsappDirectUrl = data.whatsappDirectUrl
+      if (data.smsDirectUrl) smsDirectUrl = data.smsDirectUrl
+      if (response.ok) {
+        const channelsList = data.results ? Object.values(data.results) : []
+        if (channelsList.length > 0) {
+          deliveryStatus = channelsList
+            .map((item) => {
+              const label =
+                item.channel === 'whatsapp'
+                  ? 'WhatsApp'
+                  : item.channel === 'email'
+                    ? 'Email'
+                    : 'SMS'
+              if (!item.success) return `${label}: ${item.error || 'failed'}`
+              return item.simulated
+                ? `${label}: simulated for ${item.to} (add SMTP_USER & SMTP_PASS in server/.env for real inbox delivery)`
+                : `${label}: sent to ${item.to}`
+            })
+            .join(' • ')
+        } else {
+          deliveryStatus = data.simulated
+            ? `Welcome message prepared for ${data.to}.`
+            : `Welcome message sent to ${data.to} with the group invite link!`
+        }
+      } else {
+        deliveryStatus =
+          data.error ||
+          (response.status >= 500
+            ? 'Notification server (port 4000) is not running. Use the 1-click buttons below or run: npm run dev:server'
+            : 'Could not auto-send right now — use the 1-click WhatsApp/SMS buttons below.')
+      }
+    } catch {
+      deliveryStatus = 'Notification server is offline — use the 1-click WhatsApp/SMS buttons below or run: npm run dev:server'
+    } finally {
+      setSubmitting(false)
+    }
+
+    const user = {
+      name: form.name.trim(),
+      email,
+      phone: form.phone.trim(),
+      bloodGroup: form.bloodGroup,
+      channel: form.channel,
+      password: form.password,
+      role: 'user',
+      welcomeGroupLink: groupLink,
+      welcomePreview: preview,
+    }
     users.push(user)
     localStorage.setItem('users', JSON.stringify(users))
     localStorage.setItem('user', JSON.stringify(user))
-    setMessage({ type: 'success', text: 'Registration successful. Redirecting to login...' })
-    setTimeout(() => navigate('/'), 900)
+    setMessage({ type: 'success', text: 'Registration successful!' })
+    setRegisteredInfo({
+      name: user.name,
+      phone: user.phone,
+      groupLink,
+      deliveryStatus,
+      preview,
+      whatsappDirectUrl,
+      smsDirectUrl,
+    })
   }
+
+  if (registeredInfo) {
+    return (
+      <AuthCard register>
+        <div className="message success">Registration successful! Welcome, {registeredInfo.name}.</div>
+        <div className="welcome-box">
+          <p style={{ fontSize: 14 }}><strong>Mobile Notification:</strong> {registeredInfo.deliveryStatus}</p>
+          <div className="welcome-preview">{registeredInfo.preview}</div>
+          <div className="welcome-actions">
+            <a className="btn btn-primary" href={registeredInfo.groupLink} target="_blank" rel="noopener noreferrer">
+              Join Community Group
+            </a>
+            <div className="welcome-direct-row">
+              <a className="btn btn-secondary" href={registeredInfo.whatsappDirectUrl} target="_blank" rel="noopener noreferrer">
+                Send via WhatsApp
+              </a>
+              <a className="btn btn-secondary" href={registeredInfo.smsDirectUrl}>
+                Send via SMS
+              </a>
+            </div>
+            <button className="btn btn-secondary" type="button" onClick={() => navigate('/')}>
+              Continue to Login
+            </button>
+          </div>
+        </div>
+      </AuthCard>
+    )
+  }
+
   return (
     <AuthCard register>
       <form onSubmit={submit}>
         {message && <div className={`message ${message.type}`}>{message.text}</div>}
-        {[['name','Full Name','text'],['email','Email','email'],['phone','Phone Number','tel'],['password','Password','password'],['confirmPassword','Confirm Password','password']].map(([name,label,type]) => (
-          <div key={name}><label htmlFor={name}>{label}</label><input id={name} name={name} type={type} value={form[name]} onChange={update} required /></div>
+        {[['name','Full Name','text','e.g. Aarav Sharma'],['email','Email','email','name@example.com'],['phone','Mobile Number','tel','+91 9876543210'],['password','Password','password',''],['confirmPassword','Confirm Password','password','']].map(([name,label,type,placeholder]) => (
+          <div key={name}><label htmlFor={name}>{label}</label><input id={name} name={name} type={type} placeholder={placeholder} value={form[name]} onChange={update} required /></div>
         ))}
         <label htmlFor="bloodGroup">Blood Group</label>
         <select id="bloodGroup" name="bloodGroup" value={form.bloodGroup} onChange={update} required><option value="">Select Blood Group</option>{['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g}>{g}</option>)}</select>
-        <button className="btn btn-primary primary" type="submit">Create Account</button>
+        <label htmlFor="channel">Welcome Message Channel</label>
+        <select id="channel" name="channel" value={form.channel} onChange={update}>
+          <option value="both">WhatsApp &amp; Mobile SMS (Both)</option>
+          <option value="whatsapp">WhatsApp Only</option>
+          <option value="sms">Mobile SMS Only</option>
+        </select>
+        <button className="btn btn-primary primary" type="submit" disabled={submitting}>
+          {submitting ? 'Creating Account...' : 'Create Account'}
+        </button>
       </form>
       <div className="auth-switch">Already have an account? <Link to="/">Login</Link></div>
     </AuthCard>
@@ -217,7 +344,7 @@ function UserPortal() {
   else if(active==='Request Blood') content=<div className="panel"><h2>Request Blood Unit</h2><div className="form-grid" style={{marginTop:16}}><label>Patient Name<input/></label><label>Blood Group<select>{['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g=><option key={g}>{g}</option>)}</select></label><label>Hospital<input/></label><label>Urgency<select><option>Routine</option><option>Urgent</option><option>STAT</option></select></label><button className="btn btn-primary" style={{alignSelf:'end'}}>Submit Request</button></div></div>
   else if(active==='Camps') content=<div className="panel"><h2>Donation Camps</h2><CampTable/></div>
   else if(active==='Donor Card') content=<div className="panel" style={{maxWidth:420,background:'var(--primary)',color:'white'}}><h2>PulseLink LifeSaver</h2><p style={{margin:'18px 0'}}>{user.name}</p><strong>{user.bloodGroup||'O+'}</strong><p style={{marginTop:18}}>PL-DON-1001 • Verified Donor</p></div>
-  else content=<div className="panel"><h2>Notifications</h2><p style={{marginTop:12}}>No new urgent notifications.</p></div>
+  else content=<div className="panel"><h2>Notifications</h2><div className="welcome-box"><p><strong>Welcome to PulseLink, {user.name}!</strong></p><p style={{fontSize:14,color:'var(--text-muted)'}}>Join our donor community group to stay updated on blood drives and urgent requests.</p><a className="btn btn-primary" style={{width:'fit-content',textDecoration:'none'}} href={user.welcomeGroupLink||DEFAULT_GROUP_LINK} target="_blank" rel="noopener noreferrer">Join Community Group</a></div></div>
   return <PortalLayout role={`Donor Portal • ${user.name}`} title={`Welcome, ${user.name}${active==='Dashboard'?' 👋':''}`} sidebar={sidebar} content={content}/>
 }
 

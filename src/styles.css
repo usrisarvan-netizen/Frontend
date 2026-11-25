@@ -31,6 +31,12 @@ a { color: inherit; }
 .message { margin: 12px 0; padding: 11px; border-radius: 8px; font-size: 14px; }
 .message.error { background: var(--danger-subtle); color: var(--danger); border: 1px solid var(--danger); }
 .message.success { background: var(--success-subtle); color: var(--success); border: 1px solid var(--success); }
+.message.info { background: var(--primary-subtle); color: var(--primary); border: 1px solid var(--primary); }
+.welcome-box { margin-top: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-main); display: grid; gap: 12px; }
+.welcome-preview { white-space: pre-wrap; font-size: 13px; color: var(--text-muted); background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); }
+.welcome-actions { display: grid; gap: 10px; }
+.welcome-actions a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.welcome-direct-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
 .portal-shell { min-height: 100vh; background: var(--bg-main); }
 .portal-header { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--bg-sidebar); color: white; position: sticky; top: 0; z-index: 30; }
